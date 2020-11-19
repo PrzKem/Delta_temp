@@ -24,51 +24,71 @@ void setup() {
   digitalWrite(pulPin, LOW);
 }
 
-void loop() {
-  while (digitalRead(homeA) == HIGH)
+void moveHome(int pul_pin, int dir_pin, int home_pin)
+{
+  while (digitalRead(home_pin) == HIGH)
   {
     digitalWrite(yellowLed, HIGH);
     digitalWrite(greenLed, LOW);
-    digitalWrite(dirPin, LOW);
-    digitalWrite(pulPin, HIGH);
+    digitalWrite(dir_pin, LOW);
+    digitalWrite(pul_pin, HIGH);
     delayMicroseconds(delayTime);
-    digitalWrite(pulPin, LOW);
+    digitalWrite(pul_pin, LOW);
     delayMicroseconds(delayTime);
   }
-  if (digitalRead(homeA) == LOW)
+  if (digitalRead(home_pin) == LOW)
   {
     digitalWrite(yellowLed, LOW);
     digitalWrite(greenLed, HIGH);
-    digitalWrite(dirPin, HIGH);
-    digitalWrite(pulPin, LOW);
-
+    digitalWrite(dir_pin, HIGH);
+    digitalWrite(pul_pin, LOW);
   }
   delay(1000);
   for (int i = 0; i < 3440; i++)
   {
-    digitalWrite(pulPin, HIGH);
+    digitalWrite(pul_pin, HIGH);
     delayMicroseconds(delayTime);
-    digitalWrite(pulPin, LOW);
+    digitalWrite(pul_pin, LOW);
     delayMicroseconds(delayTime);
   }
   delay(1000);
-  while (digitalRead(homeA) == HIGH)
+  while (digitalRead(home_pin) == HIGH)
   {
     digitalWrite(yellowLed, HIGH);
     digitalWrite(greenLed, LOW);
-    digitalWrite(dirPin, LOW);
-    digitalWrite(pulPin, HIGH);
+    digitalWrite(dir_pin, LOW);
+    digitalWrite(pul_pin, HIGH);
     delayMicroseconds(delayTime);
-    digitalWrite(pulPin, LOW);
+    digitalWrite(pul_pin, LOW);
     delayMicroseconds(delayTime);
   }
-  if (digitalRead(homeA) == LOW)
+  if (digitalRead(home_pin) == LOW)
   {
     digitalWrite(yellowLed, LOW);
     digitalWrite(greenLed, HIGH);
-    digitalWrite(dirPin, HIGH);
-    digitalWrite(pulPin, LOW);
+    digitalWrite(dir_pin, LOW);
+    digitalWrite(pul_pin, LOW);
 
   }
+}
+
+void blynkLED(int ledPin, int delayTime, int times)
+{
+  int i=0;
+  boolean startStatus = digitalRead(ledPin);
+  digitalWrite(ledPin,LOW);
+  for(i=0;i<times;i++)
+  {
+    digitalWrite(ledPin,HIGH);
+    delay(delayTime);
+    digitalWrite(ledPin,LOW);
+    delay(delayTime);
+  }
+  digitalWrite(ledPin, startStatus);
+}
+
+void loop() {
+  moveHome(pulPin, dirPin, homeA);
+  blynkLED(redLed, 200, 3);
   while (1 == 1);
 }
