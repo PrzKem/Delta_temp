@@ -97,7 +97,7 @@ void resetStepper(volatile stepperInfo& si) {
   float a = si.minStepInterval / (float)si.c0;
   a *= 0.676;
 
-  float m = ((a*a - 1) / (-2 * a));
+  float m = ((a * a - 1) / (-2 * a));
   float n = m * m;
 
   si.estStepsToSpeed = n;
@@ -119,7 +119,7 @@ void prepareMovement(int whichMotor, long steps) {
   si.dir = steps > 0 ? 1 : -1;
   si.totalSteps = abs(steps);
   resetStepper(si);
-  
+
   remainingSteppersFlag |= (1 << whichMotor);
 
   unsigned long stepsAbs = abs(steps);
@@ -228,7 +228,7 @@ void runAndWait() {
 
 void adjustSpeedScales() {
   float maxTime = 0;
-  
+
   for (int i = 0; i < NUM_STEPPERS; i++) {
     if ( ! ((1 << i) & remainingSteppersFlag) )
       continue;
@@ -245,16 +245,53 @@ void adjustSpeedScales() {
   }
 }
 
-void goToPos(float theta1, float theta2, float theta3)
+void goToPos(float zadane1, float zadane2, float zadane3)
 {
-  if ( theta1 == 0.0)
+  float theta1 = zadane1 - prevPos[0];
+  float theta2 = zadane2 - prevPos[1];
+  float theta3 = zadane3 - prevPos[2];
+  float epsylon = 0.01;
+
+
+  if ( theta1 >= 0.0 && theta1 < epsylon)
     theta1 = 1;
-  if ( theta2 == 0.0)
+  else if (theta1 <= -0.0 && theta1 > -epsylon)
+    theta1 = -1;
+  if ( theta2 >= 0.0 && theta2 < epsylon)
     theta2 = 1;
-  if ( theta3 == 0.0)
+  else if (theta2 <= -0.0 && theta2 > -epsylon)
+    theta2 = -1;
+  if ( theta3 >= 0.0 && theta3 < epsylon)
     theta3 = 1;
+  else if (theta3 <= -0.0 && theta3 > -epsylon)
+    theta3 = -1;
+
+  if (DEBUG)
+  {
+    Serial.println("\n\ni\tzadane(i)\tprev(i)\t\ttheta(i)");
+    Serial.print(1); Serial.print("\t  "); Serial.print(zadane1); Serial.print("\t\t"); Serial.print(prevPos[0]); Serial.print("\t\t"); Serial.println(theta1, 4);
+    Serial.print(2); Serial.print("\t  "); Serial.print(zadane2); Serial.print("\t\t"); Serial.print(prevPos[1]); Serial.print("\t\t"); Serial.println(theta2, 4);
+    Serial.print(3); Serial.print("\t  "); Serial.print(zadane3); Serial.print("\t\t"); Serial.print(prevPos[2]); Serial.print("\t\t"); Serial.println(theta3, 4);
+  }
+
   prepareMovement(0, (int)(-theta1 * PULS_PER_REVOLUTION * GEAR_RATIO / 360.0));
   prepareMovement(1, (int)(-theta2 * PULS_PER_REVOLUTION * GEAR_RATIO / 360.0));
   prepareMovement(2, (int)(-theta3 * PULS_PER_REVOLUTION * GEAR_RATIO / 360.0));
-  runAndWait();
+  if (canMove)
+    runAndWait();
+  else
+  {
+    if (DEBUG)
+      Serial.println("SAFETY ERROR");
+
+    digitalWrite(YELLOW_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
+    while (!canMove)
+      blynkLED(RED_LED, 3, 1000);
+
+  }
+
+  prevPos[0] = zadane1;
+  prevPos[1] = zadane2;
+  prevPos[2] = zadane3;
 }
