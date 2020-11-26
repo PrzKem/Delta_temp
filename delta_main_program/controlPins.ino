@@ -1,4 +1,15 @@
-
+void debugSetup()
+{
+  int i=0;
+  if (DEBUG)
+  {
+    Serial.begin(9600);
+    Serial.println();
+    for (i = 0; i < 30; i++)
+      Serial.print("-");
+    Serial.println("\nDelta debug console");
+  }
+}
 
 void blynkLED(int ledPin, int delayTime, int times)
 {
