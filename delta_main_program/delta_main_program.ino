@@ -1,3 +1,5 @@
+#define SAFETY_BUTTON     2
+
 #define A_DIR_PIN         17
 #define A_PUL_PIN         16
 #define A_HOME            A0
@@ -21,23 +23,11 @@
 #define RF_VALUE          100.0
 #define RE_VALUE          320.0
 
-#define MIN_X             -83.846
-#define MAX_X             83.846
+#define CIRCLE_ARRAY_SIZE 100
+#define CIRCLE_RADIUS     50.0
+#define DEBUG             true
 
-#define MIN_Y             -83.846
-#define MAX_Y             83.846
-
-#define MIN_Z             -392.894
-#define MAX_Z             -225.203
-
-#define MIN_THETA1        -35.22 //polozenie czujnika krancowego jest minimum
-#define MAX_THETA1        104.04
-
-#define MIN_THETA2        -35.22 //polozenie czujnika krancowego jest minimum
-#define MAX_THETA2        106.32
-
-#define MIN_THETA3        -35.22 //polozenie czujnika krancowego jest minimum
-#define MAX_THETA3        106.32
+volatile float prevPos[3];
 
 struct stepperInfo {
   // externally defined parameters
@@ -67,15 +57,25 @@ struct stepperInfo {
   volatile unsigned int stepCount;         // number of steps completed in current movement
 };
 
-void setup() {
+boolean canMove = true;
+
+void setup()
+{
   pinSetup();
   stepperSetup();
+  debugSetup();
+  safetySetup();
 
-  moveHome(A_PUL_PIN, A_DIR_PIN, A_HOME);
-  blynkLED(RED_LED, 200, 3);
-  moveHome(B_PUL_PIN, B_DIR_PIN, B_HOME);
-  blynkLED(RED_LED, 200, 3);
-  goToPos(35.22,35.22,0);
+  homingRoutine();
+  goToPos(0, 0, 0);
+  delay(1000);
+  goToPos(10, 0, 0);
+  delay(1000);
+  goToPos(-5, 0, 0);
+  delay(1000);
+  //circle(10);
+  //delay(1000);
+  cube(10);
 }
 
 void loop() {
