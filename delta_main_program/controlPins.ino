@@ -34,6 +34,7 @@ void pinSetup()
   pinMode(A_HOME, INPUT_PULLUP);
   pinMode(B_HOME, INPUT_PULLUP);
   pinMode(C_HOME, INPUT_PULLUP);
+  pinMode(MANUAL_SWITCH, INPUT_PULLUP);
 
   digitalWrite(YELLOW_LED, LOW);
   digitalWrite(GREEN_LED, LOW);
