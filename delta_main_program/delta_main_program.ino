@@ -1,3 +1,7 @@
+#include <ArduinoJson.h>
+#include <Ethernet.h>
+#include <SPI.h>
+
 #define SAFETY_BUTTON     2
 
 #define A_DIR_PIN         17
@@ -27,8 +31,6 @@
 #define CIRCLE_RADIUS     50.0
 #define DEBUG             true
 
-volatile float prevPos[3];
-
 struct stepperInfo {
   // externally defined parameters
   float acceleration;
@@ -57,7 +59,14 @@ struct stepperInfo {
   volatile unsigned int stepCount;         // number of steps completed in current movement
 };
 
+EthernetClient client;
+
 boolean canMove = true;
+volatile float prevPos[3];
+
+int getMetaInfo();
+void requestValues(int id, float* x, float* y, float* z, int* i);
+void requestRealTime(float *i, float* x, float* y, float* z);
 
 void setup()
 {
@@ -65,20 +74,23 @@ void setup()
   stepperSetup();
   debugSetup();
   safetySetup();
+  stateSetup();
+  ethernetSetup();
 
   homingRoutine();
   goToPos(0, 0, 0);
   delay(1000);
-  goToPos(10, 0, 0);
-  delay(1000);
-  goToPos(-5, 0, 0);
-  delay(1000);
-  //circle(10);
-  //delay(1000);
-  cube(10);
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  int maxReq = getMetaInfo();
+  if(digitalRead(MANUAL_SWITCH))
+  {
+   manualState(); 
+  }
+  else
+  {
+    automaticState();
+  }
 }
