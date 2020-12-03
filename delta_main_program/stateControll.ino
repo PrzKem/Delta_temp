@@ -13,7 +13,10 @@ void automaticState()
   int i = 1, actualStatus = 0, j = 0;;
   float x, y, z;
   float theta[3] = {0.0};
-  const int delayTime = 1000;
+  const int delayTime = 0;
+
+  digitalWrite(GREEN_LED, HIGH);
+  digitalWrite(YELLOW_LED, LOW);
 
   for (i = 1; i <= maxReq; i++)
   {
@@ -45,11 +48,10 @@ void automaticState()
           Serial.print(z); Serial.println("]");
 
         }
-        while (1 == 1)
-        {
+
           blynkLED(RED_LED, 100, actualStatus);
           delay(1000);
-        }
+
       }
       else
       {
@@ -59,6 +61,11 @@ void automaticState()
     }
     else if (j == 2)
     {
+      if(DEBUG)
+      {
+        Serial.print("[AUTOMATIC  ] Wait: ");
+        Serial.println((int)x);
+      }
       delay((int)x);
     }
 
@@ -72,6 +79,10 @@ void manualState()
   float x, y, z;
   float theta[3];
   manualDelay.actualTime = millis();
+
+  digitalWrite(GREEN_LED, LOW);
+  digitalWrite(YELLOW_LED, HIGH);
+
   if (manualDelay.actualTime >= manualDelay.lastTime + manualDelay.delayTime)
   {
     requestRealTime(&i, &x, &y, &z);
@@ -103,11 +114,10 @@ void manualState()
           Serial.print(z); Serial.println("]");
 
         }
-        while (1 == 1)
-        {
-          blynkLED(RED_LED, 100, actualStatus);
-          delay(1000);
-        }
+
+        blynkLED(RED_LED, 500, -actualStatus);
+        delay(1000);
+
       }
       else
       {
@@ -115,9 +125,11 @@ void manualState()
         delay(delayTime);
       }
     }
+    else if(i==2)
+    {
+      homingRoutine();
+    }
   }
-
-
 }
 
 void stateSetup()

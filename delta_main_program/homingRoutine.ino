@@ -5,7 +5,7 @@ const int delayTime = 200;
 void przyspieszanie(const int pulPin, const int dirPin, boolean dir)
 {
   int max_speed = 50;
-  float c0 = 5000;
+  float c0 = 10000;
   float d;
 
   digitalWrite(dirPin, dir);
@@ -88,13 +88,19 @@ void homingRoutine()
     Serial.println("\nA in home position");
   moveHome(B_PUL_PIN, B_DIR_PIN, B_HOME);
   blynkLED(RED_LED, 200, 3);
-  Serial.println("B in home position");
+  if (DEBUG)
+    Serial.println("B in home position");
   moveHome(C_PUL_PIN, C_DIR_PIN, C_HOME);
   blynkLED(RED_LED, 200, 3);
-  Serial.println("C in home position");
+  if (DEBUG)
+    Serial.println("C in home position");
   for (i = 0; i < 3; i++)
     prevPos[i] = -35.22;
-  Serial.println("Homing done\n");
+
+  goToPos(0, 0, 0);
+  delay(1000);
+  if (DEBUG)
+    Serial.println("Homing done\n");
   digitalWrite(YELLOW_LED, LOW);
   digitalWrite(GREEN_LED, HIGH);
 }

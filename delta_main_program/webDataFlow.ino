@@ -14,7 +14,7 @@ int getMetaInfo()
   int respo = 0;
   if (DEBUG)
   {
-    Serial.println(F("Connecting..."));
+    //Serial.println(F("Connecting..."));
   }
 
   // Connect to HTTP server
@@ -27,8 +27,8 @@ int getMetaInfo()
     }
     return;
   }
-
-  Serial.println(F("Connected!"));
+  //if (DEBUG)
+      //Serial.println(F("Connected!"));
 
   // Send HTTP request
   client.println("GET /values.php?rN=1 HTTP/1.0");
@@ -155,24 +155,6 @@ void requestValues(int id, float* x, float* y, float* z, int* i)
 
   // Disconnect
   client.stop();
-
-  if (*i == 1)
-  {
-    if (DEBUG)
-    {
-      Serial.print("Go to pos: ");
-      Serial.print("["); Serial.print(*x, 2); Serial.print(", "); Serial.print(*y, 2); Serial.print(", "); Serial.print(*z, 2); Serial.println("]");
-    }
-  }
-  else if (*i == 2)
-  {
-    if (DEBUG)
-    {
-      Serial.print("Wait: ");
-      Serial.println(*x, 0);
-    }
-    delay((int *)x);
-  }
 }
 
 void requestRealTime(int *i, float* x, float* y, float* z)
@@ -239,12 +221,12 @@ void requestRealTime(int *i, float* x, float* y, float* z)
   }
 
   // Extract values
-  i = doc["canGo"].as<int>();
+  *i = doc["canGo"].as<int>();
   *x = doc["x"].as<float>();
   *y = doc["y"].as<float>();
   *z = doc["z"].as<float>();
 
-  if (i == 1)
+  if (*i == 1)
   {
     if (DEBUG)
     {

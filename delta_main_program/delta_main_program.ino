@@ -78,8 +78,7 @@ void setup()
   ethernetSetup();
 
   homingRoutine();
-  goToPos(0, 0, 0);
-  delay(1000);
+  
 
 }
 
@@ -87,10 +86,10 @@ void loop() {
   int maxReq = getMetaInfo();
   if(digitalRead(MANUAL_SWITCH))
   {
-   manualState(); 
+    automaticState();
   }
   else
   {
-    automaticState();
+    manualState(); 
   }
 }
